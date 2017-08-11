@@ -88,7 +88,7 @@ namespace NetCoreUv
         public delegate void uv_read_cb(IntPtr server, int nread, ref uv_buf_t buf);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void uv_write_cb(IntPtr writeHandle, int status);
+        public delegate void uv_write_cb(IntPtr writeRequest, int status);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void uv_prepare_cb(IntPtr prepareHandle);
