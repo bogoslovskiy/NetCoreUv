@@ -88,6 +88,9 @@ namespace NetCoreUv
         public delegate void uv_read_cb(IntPtr server, int nread, ref uv_buf_t buf);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void uv_write_cb(IntPtr writeHandle, int status);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void uv_prepare_cb(IntPtr prepareHandle);
         
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -101,6 +104,9 @@ namespace NetCoreUv
 
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_handle_size(HandleType handleType);
+        
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        static public extern int uv_req_size(RequestType reqType);
 
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_loop_init(UvLoopHandle handle);
@@ -137,7 +143,16 @@ namespace NetCoreUv
 
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_try_write(UvStreamHandle handle, uv_buf_t[] bufs, int nbufs);
-
+        
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        static public extern int uv_write(
+            UvWriteRequest writeRequest,
+            UvTcpHandle tcpHandle,
+            uv_buf_t[] bufs,
+            int nbufs,
+            uv_write_cb write_cb
+        );
+        
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_tcp_init(UvLoopHandle loopHandle, UvTcpHandle tcpHandle);
 
