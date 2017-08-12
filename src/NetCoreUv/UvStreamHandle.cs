@@ -19,7 +19,7 @@ namespace NetCoreUv
         private ConnectionCallback _connectionCallback;
         private AllocCallback _allocCallback;
         private ReadCallback _readCallback;
-
+        
         public void Listen(int backlog, ConnectionCallback connectionCallback)
         {
             _connectionCallback = connectionCallback;

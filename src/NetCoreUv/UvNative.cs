@@ -79,7 +79,10 @@ namespace NetCoreUv
         public delegate void uv_close_cb(IntPtr handle);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void uv_connection_cb(IntPtr serverHandle, int status);
+        public delegate void uv_connect_cb(IntPtr connectRequestPtr, int status);
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void uv_connection_cb(IntPtr handlePtr, int status);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void uv_alloc_cb(IntPtr server, int suggested_size, out uv_buf_t buf);
@@ -88,7 +91,7 @@ namespace NetCoreUv
         public delegate void uv_read_cb(IntPtr server, int nread, ref uv_buf_t buf);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void uv_write_cb(IntPtr writeRequest, int status);
+        public delegate void uv_write_cb(IntPtr writeRequestPtr, int status);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void uv_prepare_cb(IntPtr prepareHandle);
@@ -156,6 +159,14 @@ namespace NetCoreUv
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_tcp_init(UvLoopHandle loopHandle, UvTcpHandle tcpHandle);
 
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        static public extern int uv_tcp_connect(
+            UvConnectRequest connectRequest,
+            UvTcpHandle tcpHandle,
+            ref SockAddr addr,
+            uv_connection_cb connection_cb
+        );
+        
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_tcp_bind(UvTcpHandle handle, ref SockAddr addr, int flags);
 

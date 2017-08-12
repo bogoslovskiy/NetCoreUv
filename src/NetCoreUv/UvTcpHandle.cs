@@ -5,6 +5,9 @@ namespace NetCoreUv
 {
     public class UvTcpHandle : UvStreamHandle
     {
+        private UvConnectRequest _connectRequest;
+        private ConnectionCallback _connectionCallback;
+        
         public void Init(UvLoopHandle loopHandle)
         {
             int tcpHandleSize = UvNative.uv_handle_size(UvNative.HandleType.TCP);
@@ -13,8 +16,25 @@ namespace NetCoreUv
 
             UvNative.uv_tcp_init(loopHandle, this);
         }
+        
+        public void Connect(ServerAddress address, ConnectionCallback connectionCallback)
+        {
+            SockAddr addr = GetSockAddr(address);
+            
+            _connectionCallback = connectionCallback;
+            _connectRequest = new UvConnectRequest();
+            _connectRequest.Init();
+            UvNative.uv_tcp_connect(_connectRequest, this, ref addr, ConnectionCb);
+        }
 
         public void Bind(ServerAddress address)
+        {
+            SockAddr addr = GetSockAddr(address);
+
+            UvNative.uv_tcp_bind(this, ref addr, 0 /* flags */);
+        }
+
+        static private SockAddr GetSockAddr(ServerAddress address)
         {
             IPEndPoint endpoint = CreateIPEndpoint(address);
 
@@ -32,10 +52,16 @@ namespace NetCoreUv
                     throw new Exception();
                 }
             }
-
-            UvNative.uv_tcp_bind(this, ref addr, 0 /* flags */);
+            return addr;
         }
 
+        private void ConnectionCb(IntPtr handle, int status)
+        {
+            // TODO: dispose _connectRequest?
+            //UvTcpHandle tcpHandle = FromIntPtr<UvTcpHandle>(handle);
+            _connectionCallback(this, status);
+        }
+        
         static private IPEndPoint CreateIPEndpoint(ServerAddress address)
         {
             // TODO: IPv6 support
