@@ -160,6 +160,9 @@ namespace NetCoreUv
         static public extern int uv_tcp_init(UvLoopHandle loopHandle, UvTcpHandle tcpHandle);
 
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        static public extern int uv_tcp_keepalive(UvTcpHandle handle, int enable, uint delay);
+        
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         static public extern int uv_tcp_connect(
             UvConnectRequest connectRequest,
             UvTcpHandle tcpHandle,

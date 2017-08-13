@@ -16,6 +16,11 @@ namespace NetCoreUv
 
             UvNative.uv_tcp_init(loopHandle, this);
         }
+
+        public void KeepAlive(uint delay)
+        {
+            UvNative.uv_tcp_keepalive(this, 1, delay);
+        }
         
         public void Connect(ServerAddress address, ConnectionCallback connectionCallback)
         {
