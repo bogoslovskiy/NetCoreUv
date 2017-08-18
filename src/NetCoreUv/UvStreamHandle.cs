@@ -51,6 +51,15 @@ namespace NetCoreUv
             return UvNative.uv_try_write(this, _writeBufs, 1);
         }
 
+        public void Close()
+        {
+            UvNative.uv_close(DangerousGetHandle(), Closed);
+        }
+
+        private void Closed(IntPtr intPtr)
+        {
+        }
+
         static private void ConnectionCb(IntPtr handle, int status)
         {
             UvStreamHandle streamHandle = FromIntPtr<UvStreamHandle>(handle);
@@ -59,14 +68,29 @@ namespace NetCoreUv
 
         static private void AllocCb(IntPtr handle, int suggestedSize, out UvNative.uv_buf_t buf)
         {
-            UvStreamHandle streamHandle = FromIntPtr<UvStreamHandle>(handle);
-            streamHandle._allocCallback(streamHandle, suggestedSize, out buf);
+            try
+            {
+                UvStreamHandle streamHandle = FromIntPtr<UvStreamHandle>(handle);
+                streamHandle._allocCallback(streamHandle, suggestedSize, out buf);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                buf = new UvNative.uv_buf_t();
+            }
         }
 
         static private void ReadCb(IntPtr handle, int status, ref UvNative.uv_buf_t buf)
         {
-            UvStreamHandle streamHandle = FromIntPtr<UvStreamHandle>(handle);
-            streamHandle._readCallback(streamHandle, status, ref buf);
+            try
+            {
+                UvStreamHandle streamHandle = FromIntPtr<UvStreamHandle>(handle);
+                streamHandle._readCallback(streamHandle, status, ref buf);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 }
